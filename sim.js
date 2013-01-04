@@ -1,5 +1,4 @@
 var GS = {};
-$('#main').css('width', $(window).width() + 'px');
 GS.World = function ($canvas) {
 	this.$canvas = $canvas;
 	this.ctx = $canvas[0].getContext('2d');
@@ -39,7 +38,6 @@ GS.World.prototype.attachEvents = function () {
 		} else {
 			self.createParticle(e.pageX, e.pageY);
 		}
-		
 	});
 
 }
@@ -76,9 +74,6 @@ GS.World.prototype.calcStarsForces = function () {
 			var force = GS.Const.gravityConst * star.mass * particle.mass / dPowed;
 			var fx = force * Math.cos(angle);
 			var fy = force * Math.sin(angle);
-			if (dPowed <= 0.01) {
-				dPowed = 1;
-			}
 			if (dx > 0) {
 				particle.fx -= fx;
 			} else {
@@ -101,9 +96,6 @@ GS.World.prototype.calcParticlesForces = function () {
 			var dy = otherParticle.y - mainParticle.y;
 			var angle = Math.abs(Math.atan(dy/dx));
 			var dPowed = dx * dx + dy * dy;
-			if (dPowed <= 0.01) {
-				dPowed = 1;
-			}
 			var force = GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
 			var fx = force * Math.cos(angle);
 			var fy = force * Math.sin(angle);
@@ -125,11 +117,9 @@ GS.World.prototype.calcParticlesForces = function () {
 	}
 }
 GS.World.prototype.accelerateAndMove = function () {
-	var currentTime = Date.now();
 	for (var i = 0, partLen = this.particles.length; i < partLen; i += 1) {
 		this.particles[i].advance();
 	}
-	this.previousTime = currentTime;
 }
 GS.World.prototype.drawBackground = function () {
 	this.ctx.fillStyle = GS.Colors.bgFillStyle;
@@ -217,18 +207,19 @@ GS.Const = {
 	particleRad: 5,
 	particleMass: 1,
 	starRad: 10,
-	starMass: 10,
-	gravityConst: 500,
+	starMass: 13,
+	gravityConst: 250,
 	speedLimit: 15,
 	FPS: 1000 / 40,	
 };
 GS.Colors = {
 	particleFillStyle:'rgba(128,128,255,1)',
 	bgFillStyle: 'rgba(40,40,40,0.6)',
-	starFillStyle: '#FF0'
+	starFillStyle: 'rgb(200, 80, 0)',
 };
 
 $(document).ready(function () {
+	$('#main').css('width', $(window).width() + 'px');
 	var world = new GS.World($('#gameview'));
 	world.start();
 });
