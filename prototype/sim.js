@@ -2,10 +2,12 @@ var GS = {};
 
 GS.World = function (canvas) {
 	this.ctx = canvas.getContext('2d');
+	this.ctx.globalCompositeOperation = 'lighter';
 	this.ctx.strokeStyle = 'black';
 };
 GS.World.prototype.start = function () {
 	this.initWorld();
+	this.drawBackground();
 	var self = this;
 	setInterval(function () {
 		self.draw();
@@ -54,7 +56,7 @@ GS.World.prototype.calcSmallForces = function () {
 			other = this.particles[j];
 			var dx = current.x - other.x;
 			var dy = current.y - other.y;
-			var dPowed = Math.pow(dx * dx + dy * dy, 0.8);
+			var dPowed = dx * dx + dy * dy;
 			var force = GravityMass / dPowed;
 			var angle = Math.abs(Math.atan(dy/dx));
 			var fx = force * Math.cos(angle);
@@ -164,9 +166,9 @@ GS.Const = {
 	
 	maxRadious: 20,
 	minRadious: 15,
-	particleAmount: 50,
+	particleAmount: 20,
 	particleMaxSpeed: 2,
-	speedLimit: 2,
+	speedLimit: 4,
 	FPS: 1000 / 60,		
 };
 GS.Colors = {

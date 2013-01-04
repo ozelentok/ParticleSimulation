@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Particles Simulation</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<style type="text/css">
+			body {
+				background-color: #444;
+				color: white;
+				margin: 0;
+				padding:0;
+				line-height: 0;
+			}
+			h1 {
+				font-size: 20px;
+			}
+			h2 {
+				font-size: 14px;
+			}
+			#gameview {
+				position: absolute;
+				margin: 0;
+				padding:0;
+				display: block;
+			}
+			#sidebar {
+				line-height: normal;
+				float: right;
+				width: 250px;
+			}
+			#main {
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="main">
+			<canvas id="gameview"></canvas>
+			<div id="sidebar">
+				<p>
+					<h1>Particle Simulation</h1>
+					
+					<h2>Select particle to create:</h2>
+					<label><input type="radio" name="partType" value="Particle">Particle</label>
+					<br>
+					<label><input type="radio" name="partType" value="Star">Star</label>
+
+
+				</p>
+
+
+			</div>
+		</div>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript"></script>
+		<script type="text/javascript" src="sim.js"></script>
+	</body>
+</html>
+
