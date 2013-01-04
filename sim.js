@@ -201,7 +201,7 @@ GS.Particle.prototype.advance = function()  {
 
 
 GS.Const = {
-	width: $(window).width() - 250,
+	width: $(window).width() - 220,
 	height: $(window).height(),
 	
 	particleRad: 5,
