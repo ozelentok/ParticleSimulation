@@ -1,7 +1,8 @@
 var GS = {};
 $('#main').css('width', $(window).width() + 'px');
-GS.World = function (canvas) {
-	this.ctx = canvas.getContext('2d');
+GS.World = function ($canvas) {
+	this.$canvas = $canvas;
+	this.ctx = $canvas[0].getContext('2d');
 	this.ctx.globalCompositeOperation = 'lighter'; // enable "tails"
 	this.ctx.strokeStyle = 'black';
 	this.ctx.canvas.width = GS.Const.width;
@@ -18,35 +19,51 @@ GS.World.prototype.start = function () {
 	}, GS.Const.FPS);
 };
 GS.World.prototype.initWorld = function () {
-	this.particles = this.generateParticles(8); // moving particles
+	this.particles = [] // moving particles
 	this.stars = []; // static particles
+	this.starCreateMode = false;
 	this.drawBackground();
+	this.attachEvents();
 };
+GS.World.prototype.attachEvents = function () {
+	var self = this;
+	$('#particleRadio').click(function() {
+		self.starCreateMode = false;
+	});
+	$('#starRadio').click(function() {
+		self.starCreateMode = true;
+	})
+	self.$canvas.mousedown(function (e) {
+		if(self.starCreateMode) {
+			self.createStar(e.pageX, e.pageY);
+		} else {
+			self.createParticle(e.pageX, e.pageY);
+		}
+		
+	});
 
+}
 GS.World.prototype.runPhysics = function () {
 	this.calcStarsForces();
 	this.calcParticlesForces();
 	this.accelerateAndMove();
 };
-GS.World.prototype.generateParticles = function (length) {
-	var particles = [];
-	var xMul = GS.Const.width;
-	var yMul = GS.Const.height;
-	var massMul = GS.Const.massMax;
-	var radMul = GS.Const.maxRadious - GS.Const.minRadious;
-	var speedMul = GS.Const.particleMaxSpeed;
-	for (var i = 0; i < length; i += 1) {
-		particles.push(new GS.Particle({
-			x: Math.round(Math.random() * xMul),
-			y: Math.round(Math.random() * yMul),
-			rad: Math.round(Math.random() * 15 + 5),
-			vx: Math.round(Math.random() * 10 - 5),
-			vy: Math.round(Math.random() * 10 - 5),
-		}));
-		particles[i].mass = 100 * particles[i].rad;
-	}
-	return particles;
-};
+GS.World.prototype.createParticle = function (x, y) {
+	this.particles.push(new GS.Particle({
+		x: x,
+		y: y,
+		rad: GS.Const.particleRad,
+		mass: GS.Const.particleMass,
+	}));
+}
+GS.World.prototype.createStar = function (x, y) {
+	this.stars.push(new GS.Particle({
+		x: x,
+		y: y,
+		rad: GS.Const.starRad,
+		mass: GS.Const.starMass,
+	}));	
+}
 GS.World.prototype.calcStarsForces = function () {
 	for (var i = 0, starsLen = this.stars.length; i < starsLen; i += 1) {
 		var star = this.stars[i];
@@ -56,9 +73,12 @@ GS.World.prototype.calcStarsForces = function () {
 			var dy = particle.y - star.y;
 			var angle = Math.abs(Math.atan(dy/dx));
 			var dPowed = dx * dx + dy * dy
-			var force = star.mass / dPowed;
+			var force = GS.Const.gravityConst * star.mass * particle.mass / dPowed;
 			var fx = force * Math.cos(angle);
 			var fy = force * Math.sin(angle);
+			if (dPowed <= 0.01) {
+				dPowed = 1;
+			}
 			if (dx > 0) {
 				particle.fx -= fx;
 			} else {
@@ -81,7 +101,10 @@ GS.World.prototype.calcParticlesForces = function () {
 			var dy = otherParticle.y - mainParticle.y;
 			var angle = Math.abs(Math.atan(dy/dx));
 			var dPowed = dx * dx + dy * dy;
-			var force = otherParticle.mass * mainParticle.mass / dPowed;
+			if (dPowed <= 0.01) {
+				dPowed = 1;
+			}
+			var force = GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
 			var fx = force * Math.cos(angle);
 			var fy = force * Math.sin(angle);
 			if (dx > 0) {
@@ -148,21 +171,24 @@ GS.Particle = function (options) {
 	this.fy = 0;
 };
 GS.Particle.prototype.advance = function()  {
-	this.vx += this.fx / this.mass;
-	this.vy += this.fy / this.mass;
+	var vxNew = this.vx + this.fx / this.mass;
+	var vyNew = this.vy + this.fy / this.mass;
 
-	if (this.vx >= GS.Const.speedLimit) {
-		this.vx = GS.Const.speedLimit;
-	} else if (this.vx <= -GS.Const.speedLimit) {
-		this.vx = -GS.Const.speedLimit;
+	if (vxNew >= GS.Const.speedLimit) {
+		vxNew = GS.Const.speedLimit;
+	} else if (vxNew <= -GS.Const.speedLimit) {
+		vxNew= -GS.Const.speedLimit;
 	}
-	if (this.vy >= GS.Const.speedLimit) {
-		this.vy = GS.Const.speedLimit;
-	} else if (this.vy <= -GS.Const.speedLimit) {
-		this.vy = -GS.Const.speedLimit;
+	if (vyNew >= GS.Const.speedLimit) {
+		vyNew = GS.Const.speedLimit;
+	} else if (vyNew <= -GS.Const.speedLimit) {
+		vyNew = -GS.Const.speedLimit;
 	}
-	this.x += this.vx;
-	this.y += this.vy;
+
+	this.x += (this.vx + vxNew) / 2;
+	this.y += (this.vx + vyNew) / 2;
+	this.vx = vxNew;
+	this.vy = vyNew;
 	this.fx = 0;
 	this.fy = 0;
 
@@ -183,12 +209,16 @@ GS.Particle.prototype.advance = function()  {
 	}
 };
 
+
 GS.Const = {
 	width: $(window).width() - 250,
 	height: $(window).height(),
 	
-	particleRad: 10,
-	starRad: 20,
+	particleRad: 5,
+	particleMass: 1,
+	starRad: 10,
+	starMass: 10,
+	gravityConst: 500,
 	speedLimit: 15,
 	FPS: 1000 / 40,	
 };
@@ -199,7 +229,7 @@ GS.Colors = {
 };
 
 $(document).ready(function () {
-	var world = new GS.World($('#gameview')[0]);
+	var world = new GS.World($('#gameview'));
 	world.start();
 });
 
