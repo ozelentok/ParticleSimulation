@@ -69,20 +69,22 @@ GS.World.prototype.calcStarsForces = function () {
 			var particle = this.particles[k];
 			var dx = particle.x - star.x;
 			var dy = particle.y - star.y;
-			var angle = Math.abs(Math.atan(dy/dx));
-			var dPowed = dx * dx + dy * dy
-			var force = GS.Const.gravityConst * star.mass * particle.mass / dPowed;
-			var fx = force * Math.cos(angle);
-			var fy = force * Math.sin(angle);
-			if (dx > 0) {
-				particle.fx -= fx;
-			} else {
-				particle.fx += fx;
-			}
-			if (dy > 0) {
-				particle.fy -= fy;
-			} else {
-				particle.fy += fy;
+			var dPowed = dx * dx + dy * dy;
+			if(dPowed > GS.Const.minDistance) {
+				var angle = Math.abs(Math.atan(dy/dx));
+				var force = GS.Const.gravityConst * star.mass * particle.mass / dPowed;
+				var fx = force * Math.cos(angle);
+				var fy = force * Math.sin(angle);
+				if (dx > 0) {
+					particle.fx -= fx;
+				} else {
+					particle.fx += fx;
+				}
+				if (dy > 0) {
+					particle.fy -= fy;
+				} else {
+					particle.fy += fy;
+				}
 			}
 		}
 	}
@@ -94,32 +96,37 @@ GS.World.prototype.calcParticlesForces = function () {
 			var otherParticle = this.particles[k];
 			var dx = otherParticle.x - mainParticle.x;
 			var dy = otherParticle.y - mainParticle.y;
-			var angle = Math.abs(Math.atan(dy/dx));
 			var dPowed = dx * dx + dy * dy;
-			var force = GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
-			var fx = force * Math.cos(angle);
-			var fy = force * Math.sin(angle);
-			if (dx > 0) {
-				otherParticle.fx -= fx;
-				mainParticle.fx += fx;
-			} else {
-				otherParticle.fx += fx;
-				mainParticle.fx -= fx;
-			}
-			if (dy > 0) {
-				otherParticle.fy -= fy;
-				mainParticle.fy += fx;
-			} else {
-				otherParticle.fy += fy;
-				mainParticle.fy -= fx;
+			if(dPowed > GS.Const.minDistance) {	
+				var angle = Math.abs(Math.atan(dy/dx));
+				var force = GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
+				var fx = force * Math.cos(angle);
+				var fy = force * Math.sin(angle);
+				if (dx > 0) {
+					otherParticle.fx -= fx;
+					mainParticle.fx += fx;
+				} else {
+					otherParticle.fx += fx;
+					mainParticle.fx -= fx;
+				}
+				if (dy > 0) {
+					otherParticle.fy -= fy;
+					mainParticle.fy += fx;
+				} else {
+					otherParticle.fy += fy;
+					mainParticle.fy -= fx;
+				}
 			}
 		}
 	}
 }
 GS.World.prototype.accelerateAndMove = function () {
+	this.currentTime = Date.now() / 22;
+	var dt = this.currentTime - this.prevTime;
 	for (var i = 0, partLen = this.particles.length; i < partLen; i += 1) {
-		this.particles[i].advance();
+		this.particles[i].advance(dt);
 	}
+	this.prevTime = this.currentTime;
 }
 GS.World.prototype.drawBackground = function () {
 	this.ctx.fillStyle = GS.Colors.bgFillStyle;
@@ -160,23 +167,17 @@ GS.Particle = function (options) {
 	this.fx = 0;
 	this.fy = 0;
 };
-GS.Particle.prototype.advance = function()  {
-	var vxNew = this.vx + this.fx / this.mass;
-	var vyNew = this.vy + this.fy / this.mass;
-
+GS.Particle.prototype.advance = function(dt)  {
+	var vxNew = this.vx + dt * this.fx / this.mass;
+	var vyNew = this.vy + dt * this.fy / this.mass;
+	var dtPowed = dt * dt;
 	if (vxNew >= GS.Const.speedLimit) {
-		vxNew = GS.Const.speedLimit;
-	} else if (vxNew <= -GS.Const.speedLimit) {
-		vxNew= -GS.Const.speedLimit;
+		vxNew = this.vx;
+	if (vyNew >= GS.Const.speedLimit)
+		vyNew = this.vy;
 	}
-	if (vyNew >= GS.Const.speedLimit) {
-		vyNew = GS.Const.speedLimit;
-	} else if (vyNew <= -GS.Const.speedLimit) {
-		vyNew = -GS.Const.speedLimit;
-	}
-
-	this.x += (this.vx + vxNew) / 2;
-	this.y += (this.vx + vyNew) / 2;
+	this.x += ((this.vx + vxNew) / 2) * dtPowed;
+	this.y += ((this.vx + vyNew) / 2) * dtPowed;
 	this.vx = vxNew;
 	this.vy = vyNew;
 	this.fx = 0;
@@ -184,18 +185,26 @@ GS.Particle.prototype.advance = function()  {
 
 	if (this.x - this.rad <= 0) {
 		this.x = this.rad;
-		this.vx = -this.vx / 2;
+		if(this.vx < 0) {
+			this.vx = -this.vx / 2;
+		}
 	} else if (this.x + this.rad >= GS.Const.width) {
 		this.x = GS.Const.width - this.rad;
-		this.vx = -this.vx / 2;
+		if(this.vx > 0) {
+			this.vx = -this.vx / 2;
+		}
 	}
 
 	if (this.y - this.rad <= 0) {
 		this.y = this.rad;
-		this.vy = -this.vy / 2;
+		if(this.vx < 0) {
+			this.vy = -this.vy / 2;
+		}
 	} else if (this.y + this.rad >= GS.Const.height) {
 		this.y = GS.Const.height - this.rad;
-		this.vy = -this.vy / 2;
+		if(this.vy > 0) {
+			this.vy = -this.vy / 2;
+		}
 	}
 };
 
@@ -204,13 +213,14 @@ GS.Const = {
 	width: $(window).width() - 220,
 	height: $(window).height(),
 	
+	minDistance: 120,
 	particleRad: 5,
-	particleMass: 1,
+	particleMass: 2,
 	starRad: 10,
-	starMass: 13,
+	starMass: 7,
 	gravityConst: 250,
-	speedLimit: 15,
-	FPS: 1000 / 40,	
+	speedLimit: 10,
+	FPS: 1000 / 60,	
 };
 GS.Colors = {
 	particleFillStyle:'rgba(128,128,255,1)',
