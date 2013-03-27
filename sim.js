@@ -26,13 +26,15 @@ GS.World.prototype.initWorld = function () {
 };
 GS.World.prototype.attachEvents = function () {
 	var self = this;
-	$('#particleRadio').click(function() {
+	$('#particleRadio').click(function(e) {
+		e.stopPropagation();
 		self.starCreateMode = false;
 	});
-	$('#starRadio').click(function() {
+	$('#starRadio').click(function(e) {
+		e.stopPropagation();
 		self.starCreateMode = true;
 	})
-	self.$canvas.mousedown(function (e) {
+	self.$canvas.bind('click touchstart', function (e) {
 		if(self.starCreateMode) {
 			self.createStar(e.pageX, e.pageY);
 		} else {
@@ -213,7 +215,7 @@ GS.Particle.prototype.advance = function(dt)  {
 
 
 GS.Const = {
-	width: $(window).width() - 220,
+	width: $(window).width(),
 	height: $(window).height(),
 	
 	minDistance: 120,
@@ -231,10 +233,35 @@ GS.Colors = {
 	bgFillStyle: 'rgba(40,40,40,0.6)',
 	starFillStyle: 'rgb(200, 80, 0)',
 };
+GS.Sidebar = function($sidebar) {
+	var self = this;
+	this.$sidebar = $sidebar;
+	this.isClosed = true;
+	this.$sidebar.bind('click touchstart', function() {
+		if(this.isClosed) {
+			self.open();
+			this.isClosed = false;
+		} else { 
+			self.close();
+			this.isClosed = true;
+		}
+	});
+}
+GS.Sidebar.prototype.close = function () {
+	this.$sidebar.animate({
+		left:0
+	}, 1000);
+}
+GS.Sidebar.prototype.open = function() {
+	this.$sidebar.animate({
+		left:'-240'
+	}, 1000);
+}
 
 $(document).ready(function () {
 	$('#main').css('width', $(window).width() + 'px');
 	var world = new GS.World($('#gameview'));
+	var sidebar = new GS.Sidebar($('#sidebar'));
 	world.start();
 });
 
