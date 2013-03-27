@@ -27,16 +27,15 @@
 			#sidebar {
 				position: fixed;
 				float: left;
-				left:-240px;
+				left:-270px;
 				overflow: hidden;
-				width: 260px;
+				width: 240px;
 				background-color:rgba(0,0,0,0.4);
 				border-right:20px solid rgba(0,0,0,0.4);
 				line-height: normal;
+				padding: 5px 15px 5px 15px;*/
 			}
 			#sideContent {
-				padding-left:20px;
-				padding-right:20px;
 			}
 			#instruct, #credits {
 				font-size:80%;
@@ -56,8 +55,18 @@
 					<label><input type="radio" name="partType" id="particleRadio" value="Particle" checked="checked">Particle</label>
 					<br />
 					<label><input type="radio" name="partType" id="starRadio" value="Star">Star</label>
+					<h2>Options</h2>
+					<label><input type="checkbox" id="polarityBox">Reverse Direction</label>
 					<br />
-					<p id="instruct">Press on the screen to create a particle</p>
+					<label>Gravity Constant: <input type="number" id="gravityBox"></label>
+					<br />
+					<label>Particle Mass: <input type="number" id="particleMassBox"></label>
+					<br />
+					<label>Star Mass: <input type="number" id="starMassBox"></label>
+					<br />
+					<p id="instruct">Press on the screen to create a particle. <br />
+						Double click to open and close the panel.
+					</p>
 					<div id="footer">
 						<span id="credits">Made by Oz Elentok<br /> oz.elen@gmail.com</span>
 					</div>

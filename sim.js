@@ -26,15 +26,39 @@ GS.World.prototype.initWorld = function () {
 };
 GS.World.prototype.attachEvents = function () {
 	var self = this;
+	$('#particleRadio').prop('checked', true);
 	$('#particleRadio').click(function(e) {
-		e.stopPropagation();
 		self.starCreateMode = false;
 	});
+	$('#starRadio').prop('checked', false);
 	$('#starRadio').click(function(e) {
-		e.stopPropagation();
 		self.starCreateMode = true;
-	})
-	self.$canvas.bind('click touchstart', function (e) {
+	});
+
+	$('#polarityBox').prop('checked', false);
+	$('#polarityBox').click(function() {
+		if(this.checked) {
+			GS.Const.polarity = -1;
+		} else {
+			GS.Const.polarity = 1;
+		}
+	});
+	$('#gravityBox').val(GS.Const.gravityConst);
+	$('#gravityBox').change(function() {
+		GS.Const.gravityConst = parseFloat($('#gravityBox').val()) || GS.Const.gravityConst;
+		$('#gravityBox').val(GS.Const.gravityConst);
+	});
+	$('#particleMassBox').val(GS.Const.particleMass);
+	$('#particleMassBox').change(function() {
+		GS.Const.particleMass = parseFloat($('#particleMassBox').val()) || GS.Const.particleMass;
+		$('#particleMassBox').val(GS.Const.particleMass);
+	});
+	$('#starMassBox').val(GS.Const.starMass);
+	$('#starMassBox').change(function() {
+		GS.Const.starMass = parseFloat($('#starMassBox').val()) || GS.Const.starMass;
+		$('#starMassBox').val(GS.Const.starMass);
+	});
+	self.$canvas.bind('click', function (e) {
 		if(self.starCreateMode) {
 			self.createStar(e.pageX, e.pageY);
 		} else {
@@ -74,7 +98,7 @@ GS.World.prototype.calcStarsForces = function () {
 			var dPowed = dx * dx + dy * dy;
 			if(dPowed > GS.Const.minDistance) {
 				var angle = Math.abs(Math.atan(dy/dx));
-				var force = GS.Const.gravityConst * star.mass * particle.mass / dPowed;
+				var force = GS.Const.polarity * GS.Const.gravityConst * star.mass * particle.mass / dPowed;
 				var fx = force * Math.cos(angle);
 				var fy = force * Math.sin(angle);
 				if (dx > 0) {
@@ -224,6 +248,7 @@ GS.Const = {
 	starRad: 10,
 	starMass: 7,
 	gravityConst: 250,
+	polarity: 1,
 	upperSpeedLimit: 10,
 	FPS: 1000 / 60,	
 };
@@ -237,7 +262,7 @@ GS.Sidebar = function($sidebar) {
 	var self = this;
 	this.$sidebar = $sidebar;
 	this.isClosed = true;
-	this.$sidebar.bind('click touchstart', function() {
+	this.$sidebar.bind('dblclick', function() {
 		if(this.isClosed) {
 			self.open();
 			this.isClosed = false;
@@ -254,7 +279,7 @@ GS.Sidebar.prototype.close = function () {
 }
 GS.Sidebar.prototype.open = function() {
 	this.$sidebar.animate({
-		left:'-240'
+		left:'-270'
 	}, 1000);
 }
 
