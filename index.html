@@ -24,6 +24,9 @@
 				padding:0;
 				display: block;
 			}
+			input[type="number"] {
+				width:4em;
+			}
 			#sidebar {
 				position: fixed;
 				float: left;
@@ -31,11 +34,9 @@
 				overflow: hidden;
 				width: 240px;
 				background-color:rgba(0,0,0,0.4);
-				border-right:20px solid rgba(0,0,0,0.4);
+				border-right:30px solid rgba(0,0,0,0.4);
 				line-height: normal;
 				padding: 5px 15px 5px 15px;*/
-			}
-			#sideContent {
 			}
 			#instruct, #credits {
 				font-size:80%;
@@ -65,7 +66,7 @@
 					<label>Star Mass: <input type="number" id="starMassBox"></label>
 					<br />
 					<p id="instruct">Press on the screen to create a particle. <br />
-						Double click to open and close the panel.
+						Double click(Slide on touchscreen) to open and close the panel.
 					</p>
 					<div id="footer">
 						<span id="credits">Made by Oz Elentok<br /> oz.elen@gmail.com</span>

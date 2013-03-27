@@ -125,7 +125,7 @@ GS.World.prototype.calcParticlesForces = function () {
 			var dPowed = dx * dx + dy * dy;
 			if(dPowed > GS.Const.minDistance) {	
 				var angle = Math.abs(Math.atan(dy/dx));
-				var force = GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
+				var force = GS.Const.polarity * GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
 				var fx = force * Math.cos(angle);
 				var fy = force * Math.sin(angle);
 				if (dx > 0) {
@@ -262,25 +262,35 @@ GS.Sidebar = function($sidebar) {
 	var self = this;
 	this.$sidebar = $sidebar;
 	this.isClosed = true;
-	this.$sidebar.bind('dblclick', function() {
-		if(this.isClosed) {
+	this.moving = false;
+	this.$sidebar.bind('dblclick touchmove', function() {
+		if(self.moving)
+			return;
+		self.moving = true;
+		if(self.isClosed) {
 			self.open();
-			this.isClosed = false;
+			self.isClosed = false;
 		} else { 
 			self.close();
-			this.isClosed = true;
+			self.isClosed = true;
 		}
 	});
 }
 GS.Sidebar.prototype.close = function () {
+	var self = this;
 	this.$sidebar.animate({
-		left:0
-	}, 1000);
+		left:-270
+	}, 400, 'linear', function () {
+		self.moving = false;
+	});
 }
 GS.Sidebar.prototype.open = function() {
+	var self = this;
 	this.$sidebar.animate({
-		left:'-270'
-	}, 1000);
+		left:0
+	}, 400, 'linear',function() {
+		self.moving = false;
+	});
 }
 
 $(document).ready(function () {
