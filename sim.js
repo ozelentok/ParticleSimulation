@@ -137,10 +137,10 @@ GS.World.prototype.calcParticlesForces = function () {
 				}
 				if (dy > 0) {
 					otherParticle.fy -= fy;
-					mainParticle.fy += fx;
+					mainParticle.fy += fy;
 				} else {
 					otherParticle.fy += fy;
-					mainParticle.fy -= fx;
+					mainParticle.fy -= fy;
 				}
 			}
 		}
@@ -196,7 +196,6 @@ GS.Particle = function (options) {
 GS.Particle.prototype.advance = function(dt)  {
 	var vxNew = this.vx + dt * this.fx / this.mass;
 	var vyNew = this.vy + dt * this.fy / this.mass;
-	var dtPowed = dt * dt;
 	if (vxNew >= GS.Const.upperSpeedLimit ||
 			vxNew <= GS.Const.lowerSpeedLimit ) {
 		vxNew = this.vx;
@@ -205,8 +204,8 @@ GS.Particle.prototype.advance = function(dt)  {
 			vxNew <= GS.Const.lowerSpeedLimit ) {
 		vyNew = this.vy;
 	}
-	this.x += ((this.vx + vxNew) / 2) * dtPowed;
-	this.y += ((this.vx + vyNew) / 2) * dtPowed;
+	this.x += ((this.vx + vxNew) / 2) * dt;
+	this.y += ((this.vy + vyNew) / 2) * dt;
 	this.vx = vxNew;
 	this.vy = vyNew;
 	this.fx = 0;
