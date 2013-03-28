@@ -261,7 +261,7 @@ GS.Colors = {
 GS.Sidebar = function($sidebar) {
 	var self = this;
 	this.$sidebar = $sidebar;
-	this.isClosed = true;
+	this.isClosed = false;
 	this.moving = false;
 	this.$sidebar.bind('dblclick touchmove', function() {
 		if(self.moving)
