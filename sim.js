@@ -97,10 +97,13 @@ GS.World.prototype.calcStarsForces = function () {
 			var dy = particle.y - star.y;
 			var dPowed = dx * dx + dy * dy;
 			if(dPowed > GS.Const.minDistance) {
-				var angle = Math.atan2(dy, dx);
+				//var angle = Math.atan2(dy, dx);
+				var d = Math.sqrt(dPowed);
 				var force = GS.Const.polarity * GS.Const.gravityConst * star.mass * particle.mass / dPowed;
-				var fx = force * Math.cos(angle);
-				var fy = force * Math.sin(angle);
+				//var fx = force * Math.cos(angle;
+				//var fy = force * Math.sin(angle);
+				var fx = force * dx / d;
+				var fy = force * dy / d;
 				particle.fx -= fx;
 				particle.fy -= fy;
 			}
@@ -116,10 +119,13 @@ GS.World.prototype.calcParticlesForces = function () {
 			var dy = otherParticle.y - mainParticle.y;
 			var dPowed = dx * dx + dy * dy;
 			if(dPowed > GS.Const.minDistance) {	
-				var angle = Math.atan2(dy, dx);
+				//var angle = Math.atan2(dy, dx);
+				var d = Math.sqrt(dPowed);
 				var force = GS.Const.polarity * GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
-				var fx = force * Math.cos(angle);
-				var fy = force * Math.sin(angle);
+				//var fx = force * Math.cos(angle);
+				//var fy = force * Math.sin(angle);
+				var fx = force * dx / d;
+				var fy = force * dy / d;
 				otherParticle.fx -= fx;
 				otherParticle.fy -= fy;
 				mainParticle.fx += fx;
