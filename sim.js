@@ -201,7 +201,7 @@ GS.Particle.prototype.advance = function(dt)  {
 		vxNew = this.vx;
 	}
 	if (vyNew >= GS.Const.upperSpeedLimit ||
-			vxNew <= GS.Const.lowerSpeedLimit ) {
+			vyNew <= GS.Const.lowerSpeedLimit ) {
 		vyNew = this.vy;
 	}
 	this.x += ((this.vx + vxNew) / 2) * dt;
