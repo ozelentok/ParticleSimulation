@@ -225,7 +225,7 @@ GS.Particle.prototype.advance = function(dt)  {
 
 	if (this.y - this.rad <= 0) {
 		this.y = this.rad;
-		if(this.vx < 0) {
+		if(this.vy < 0) {
 			this.vy = -this.vy / 2;
 		}
 	} else if (this.y + this.rad >= GS.Const.height) {
