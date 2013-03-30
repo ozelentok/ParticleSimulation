@@ -12,7 +12,7 @@ GS.World = function ($canvas) {
 GS.World.prototype.start = function () {
 	this.initWorld();
 	var self = this;
-	this.prevTime = Date.now() / 22;
+	this.prevTime = Date.now();
 	setInterval(function () {
 		self.draw();
 		self.runPhysics();
@@ -44,16 +44,24 @@ GS.World.prototype.attachEvents = function () {
 			GS.Const.polarity = 1;
 		}
 	});
+	$('#timeSpeedBox').val(GS.Const.timeSpeed *  1000);
+	$('#timeSpeedBox').change(function() {
+		GS.Const.timeSpeed = (parseFloat($('#timeSpeedBox').val()) / 1000) || GS.Const.timeSpeed;
+		$('#timeSpeedBox').val(GS.Const.timeSpeed * 1000);
+	});
+
 	$('#gravityBox').val(GS.Const.gravityConst);
 	$('#gravityBox').change(function() {
 		GS.Const.gravityConst = parseFloat($('#gravityBox').val()) || GS.Const.gravityConst;
 		$('#gravityBox').val(GS.Const.gravityConst);
 	});
+
 	$('#particleMassBox').val(GS.Const.particleMass);
 	$('#particleMassBox').change(function() {
 		GS.Const.particleMass = parseFloat($('#particleMassBox').val()) || GS.Const.particleMass;
 		$('#particleMassBox').val(GS.Const.particleMass);
 	});
+
 	$('#starMassBox').val(GS.Const.starMass);
 	$('#starMassBox').change(function() {
 		GS.Const.starMass = parseFloat($('#starMassBox').val()) || GS.Const.starMass;
@@ -100,7 +108,7 @@ GS.World.prototype.calcStarsForces = function () {
 			//var angle = Math.atan2(dy, dx);
 			var d = Math.sqrt(dPowed);
 			if(d === 0) {
-				d = 0.001;
+				continue;
 			}	
 			var force = GS.Const.polarity * GS.Const.gravityConst * star.mass * particle.mass / dPowed;
 			//var fx = force * Math.cos(angle;
@@ -123,8 +131,8 @@ GS.World.prototype.calcParticlesForces = function () {
 			//var angle = Math.atan2(dy, dx);
 			var d = Math.sqrt(dPowed);
 			if(d === 0) {
-				d = 0.001;
-			}	
+				continue;
+			}
 			var force = GS.Const.polarity * GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
 			//var fx = force * Math.cos(angle);
 			//var fy = force * Math.sin(angle);
@@ -138,8 +146,8 @@ GS.World.prototype.calcParticlesForces = function () {
 	}
 }
 GS.World.prototype.accelerateAndMove = function () {
-	this.currentTime = Date.now() / 22;
-	var dt = this.currentTime - this.prevTime;
+	this.currentTime = Date.now();
+	var dt = (this.currentTime - this.prevTime) * GS.Const.timeSpeed;
 	for (var i = 0, partLen = this.particles.length; i < partLen; i += 1) {
 		this.particles[i].advance(dt);
 	}
@@ -238,8 +246,9 @@ GS.Const = {
 	starMass: 7,
 	gravityConst: 250,
 	polarity: 1,
+	timeSpeed: 0.045,
 	upperSpeedLimit: 10,
-	FPS: 1000 / 60,	
+	FPS: 1000 / 120,	
 };
 GS.Const.lowerSpeedLimit = -GS.Const.upperSpeedLimit;
 GS.Colors = {
