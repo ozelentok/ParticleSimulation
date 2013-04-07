@@ -192,24 +192,17 @@ GS.Particle = function (options) {
 	this.fx = 0;
 	this.fy = 0;
 };
-GS.Particle.prototype.advance = function(dt)  {
-	var vxNew = this.vx + dt * this.fx / this.mass;
-	var vyNew = this.vy + dt * this.fy / this.mass;
-	if (vxNew >= GS.Const.upperSpeedLimit ||
-			vxNew <= GS.Const.lowerSpeedLimit ) {
-		vxNew = this.vx;
-	}
-	if (vyNew >= GS.Const.upperSpeedLimit ||
-			vyNew <= GS.Const.lowerSpeedLimit ) {
-		vyNew = this.vy;
-	}
-	this.x += ((this.vx + vxNew) / 2) * dt;
-	this.y += ((this.vy + vyNew) / 2) * dt;
-	this.vx = vxNew;
-	this.vy = vyNew;
-	this.fx = 0;
-	this.fy = 0;
 
+GS.Particle.prototype.normalizeSpeed = function() {
+	var speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+	if(speed > GS.Const.speedLimit) {
+		var ratio = GS.Const.speedLimit / speed;
+		this.vx *= ratio;
+		this.vy *= ratio;
+	}
+};
+
+GS.Particle.prototype.checkWallsCollision = function() {
 	if (this.x - this.rad <= 0) {
 		this.x = this.rad;
 		if(this.vx < 0) {
@@ -221,7 +214,7 @@ GS.Particle.prototype.advance = function(dt)  {
 			this.vx = -this.vx / 2;
 		}
 	}
-
+	
 	if (this.y - this.rad <= 0) {
 		this.y = this.rad;
 		if(this.vy < 0) {
@@ -233,6 +226,19 @@ GS.Particle.prototype.advance = function(dt)  {
 			this.vy = -this.vy / 2;
 		}
 	}
+};
+GS.Particle.prototype.advance = function(dt)  {
+	var vxNew = this.vx + dt * this.fx / this.mass;
+	var vyNew = this.vy + dt * this.fy / this.mass;
+	this.vx = vxNew;
+	this.vy = vyNew;
+	this.normalizeSpeed();
+	this.x += this.vx * dt;
+	this.y += this.vy * dt;
+	this.fx = 0;
+	this.fy = 0;
+
+	this.checkWallsCollision();
 };
 
 
@@ -246,9 +252,9 @@ GS.Const = {
 	starMass: 7,
 	gravityConst: 250,
 	polarity: 1,
-	timeSpeed: 0.045,
-	upperSpeedLimit: 10,
-	FPS: 1000 / 120,	
+	timeSpeed: 0.025,
+	speedLimit: 18,
+	FPS: 1000 / 60,	
 };
 GS.Const.lowerSpeedLimit = -GS.Const.upperSpeedLimit;
 GS.Colors = {
