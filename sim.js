@@ -11,7 +11,6 @@ GS.World = function ($canvas) {
 };
 GS.World.prototype.start = function () {
 	this.initWorld();
-	var self = this;
 	this.prevTime = Date.now();
 	window.requestAnimFrame = (function() {
 		return window.requestAnimationFrame    || 
@@ -114,14 +113,11 @@ GS.World.prototype.calcStarsForces = function () {
 			var dx = particle.x - star.x;
 			var dy = particle.y - star.y;
 			var dPowed = dx * dx + dy * dy;
-			//var angle = Math.atan2(dy, dx);
 			var d = Math.sqrt(dPowed);
 			if(d === 0) {
 				continue;
 			}	
 			var force = GS.Const.polarity * GS.Const.gravityConst * star.mass * particle.mass / dPowed;
-			//var fx = force * Math.cos(angle;
-			//var fy = force * Math.sin(angle);
 			var fx = force * dx / d;
 			var fy = force * dy / d;
 			particle.fx -= fx;
@@ -137,14 +133,11 @@ GS.World.prototype.calcParticlesForces = function () {
 			var dx = otherParticle.x - mainParticle.x;
 			var dy = otherParticle.y - mainParticle.y;
 			var dPowed = dx * dx + dy * dy;
-			//var angle = Math.atan2(dy, dx);
 			var d = Math.sqrt(dPowed);
 			if(d === 0) {
 				continue;
 			}
 			var force = GS.Const.polarity * GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
-			//var fx = force * Math.cos(angle);
-			//var fy = force * Math.sin(angle);
 			var fx = force * dx / d;
 			var fy = force * dy / d;
 			otherParticle.fx -= fx;
@@ -237,10 +230,8 @@ GS.Particle.prototype.checkWallsCollision = function() {
 	}
 };
 GS.Particle.prototype.advance = function(dt)  {
-	var vxNew = this.vx + dt * this.fx / this.mass;
-	var vyNew = this.vy + dt * this.fy / this.mass;
-	this.vx = vxNew;
-	this.vy = vyNew;
+	this.vx += dt * this.fx / this.mass;
+	this.vy += dt * this.fy / this.mass;
 	this.normalizeSpeed();
 	this.x += this.vx * dt;
 	this.y += this.vy * dt;
@@ -265,7 +256,6 @@ GS.Const = {
 	speedLimit: 18,
 	FrameRate: 1000 / 60,	
 };
-GS.Const.lowerSpeedLimit = -GS.Const.upperSpeedLimit;
 GS.Colors = {
 	particleFillStyle:'rgba(128,128,255,1)',
 	bgFillStyle: 'rgba(40,40,40,0.6)',
