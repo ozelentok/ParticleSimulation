@@ -13,10 +13,17 @@ GS.World.prototype.start = function () {
 	this.initWorld();
 	var self = this;
 	this.prevTime = Date.now();
-	setInterval(function () {
-		self.draw();
-		self.runPhysics();
-	}, GS.Const.FPS);
+	window.requestAnimFrame = (function() {
+		return window.requestAnimationFrame    || 
+				window.webkitRequestAnimationFrame || 
+				window.mozRequestAnimationFrame    || 
+				window.oRequestAnimationFrame      || 
+				window.msRequestAnimationFrame     || 
+				function(callback){
+					window.setTimeout(callback, GS.Const.FrameRate);
+				};
+	})();
+	requestAnimFrame(this.tick.bind(this));
 };
 GS.World.prototype.initWorld = function () {
 	this.particles = [] // moving particles
@@ -76,7 +83,9 @@ GS.World.prototype.attachEvents = function () {
 	});
 
 }
-GS.World.prototype.runPhysics = function () {
+GS.World.prototype.tick = function () {	
+	requestAnimFrame(this.tick.bind(this));
+	this.draw();
 	this.calcStarsForces();
 	this.calcParticlesForces();
 	this.accelerateAndMove();
@@ -254,7 +263,7 @@ GS.Const = {
 	polarity: 1,
 	timeSpeed: 0.025,
 	speedLimit: 18,
-	FPS: 1000 / 60,	
+	FrameRate: 1000 / 60,	
 };
 GS.Const.lowerSpeedLimit = -GS.Const.upperSpeedLimit;
 GS.Colors = {
