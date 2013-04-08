@@ -298,11 +298,15 @@ GS.Sidebar.prototype.open = function() {
 		self.moving = false;
 	});
 }
-
+//Function.bind fix, developer.mozilla.org
+GS.compatibilityFix = function() {
+	if(!Function.prototype.bind){Function.prototype.bind=function(oThis){if(typeof this!=="function"){throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");}var aArgs=Array.prototype.slice.call(arguments,1),fToBind=this,fNOP=function(){},fBound=function(){return fToBind.apply(this instanceof fNOP&&oThis?this:oThis,aArgs.concat(Array.prototype.slice.call(arguments)))};fNOP.prototype=this.prototype;fBound.prototype=new fNOP();return fBound}};
+}
 $(document).ready(function () {
 	$('#main').css('width', $(window).width() + 'px');
 	var world = new GS.World($('#gameview'));
 	var sidebar = new GS.Sidebar($('#sidebar'));
+	GS.compatibilityFix();
 	world.start();
 });
 
