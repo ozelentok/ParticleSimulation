@@ -3,6 +3,10 @@ Hosted on:
 <a href="http://oz.elentok.com/gravity">http://oz.elentok.com/gravity</a>
 ##Instructions
 
+###Opening/Closing the Sidebar
+* On desktop, double click on the sidebar area
+* On Touchscreens, swype on the sidebar area
+
 ###Creating Particles:
 * Select type of particle to create on the sidebar
 * Click on the canvas to create a particle

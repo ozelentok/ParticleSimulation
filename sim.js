@@ -5,7 +5,7 @@ GS.World = function ($canvas) {
 	this.ctx.globalCompositeOperation = 'lighter'; // enable "tails"
 	this.ctx.strokeStyle = 'black';
 	this.ctx.canvas.width = GS.Const.width;
-	this.ctx.canvas.style.width = GS.Const.width + 'px'
+	this.ctx.canvas.style.width = GS.Const.width + 'px';
 	this.ctx.canvas.height = GS.Const.height;
 	this.ctx.canvas.style.height = GS.Const.height + 'px';
 };
@@ -21,11 +21,11 @@ GS.World.prototype.start = function () {
 				function(callback){
 					window.setTimeout(callback, GS.Const.FrameRate);
 				};
-	})();
+	}());
 	requestAnimFrame(this.tick.bind(this));
 };
 GS.World.prototype.initWorld = function () {
-	this.particles = [] // moving particles
+	this.particles = []; // moving particles
 	this.stars = []; // static particles
 	this.starCreateMode = false;
 	this.drawBackground();
@@ -81,7 +81,7 @@ GS.World.prototype.attachEvents = function () {
 		}
 	});
 
-}
+};
 GS.World.prototype.tick = function () {	
 	requestAnimFrame(this.tick.bind(this));
 	this.draw();
@@ -94,17 +94,17 @@ GS.World.prototype.createParticle = function (x, y) {
 		x: x,
 		y: y,
 		rad: GS.Const.particleRad,
-		mass: GS.Const.particleMass,
+		mass: GS.Const.particleMass
 	}));
-}
+};
 GS.World.prototype.createStar = function (x, y) {
 	this.stars.push(new GS.Particle({
 		x: x,
 		y: y,
 		rad: GS.Const.starRad,
-		mass: GS.Const.starMass,
+		mass: GS.Const.starMass
 	}));	
-}
+};
 GS.World.prototype.calcStarsForces = function () {
 	for (var i = 0, starsLen = this.stars.length; i < starsLen; i += 1) {
 		var star = this.stars[i];
@@ -124,7 +124,7 @@ GS.World.prototype.calcStarsForces = function () {
 			particle.fy -= fy;
 		}
 	}
-}
+};
 GS.World.prototype.calcParticlesForces = function () {
 	for (var i = 0, partLen = this.particles.length; i < partLen - 1; i += 1) {
 		var mainParticle = this.particles[i];
@@ -146,7 +146,7 @@ GS.World.prototype.calcParticlesForces = function () {
 			mainParticle.fy += fy;
 		}
 	}
-}
+};
 GS.World.prototype.accelerateAndMove = function () {
 	this.currentTime = Date.now();
 	var dt = (this.currentTime - this.prevTime) * GS.Const.timeSpeed;
@@ -154,7 +154,7 @@ GS.World.prototype.accelerateAndMove = function () {
 		this.particles[i].advance(dt);
 	}
 	this.prevTime = this.currentTime;
-}
+};
 GS.World.prototype.drawBackground = function () {
 	this.ctx.fillStyle = GS.Colors.bgFillStyle;
 	this.ctx.fillRect(0, 0, GS.Const.width, GS.Const.height);
@@ -254,12 +254,12 @@ GS.Const = {
 	polarity: 1,
 	timeSpeed: 0.025,
 	speedLimit: 18,
-	FrameRate: 1000 / 60,	
+	FrameRate: 1000 / 60
 };
 GS.Colors = {
 	particleFillStyle:'rgba(128,128,255,1)',
 	bgFillStyle: 'rgba(40,40,40,0.6)',
-	starFillStyle: 'rgb(200, 80, 0)',
+	starFillStyle: 'rgb(200, 80, 0)'
 };
 GS.Sidebar = function($sidebar) {
 	var self = this;
@@ -281,7 +281,7 @@ GS.Sidebar = function($sidebar) {
 	this.$sidebar.find('label').bind('dblclick touchmove', function(e) {
 		e.stopPropagation();
 	});
-}
+};
 GS.Sidebar.prototype.close = function () {
 	var self = this;
 	this.$sidebar.animate({
@@ -289,7 +289,7 @@ GS.Sidebar.prototype.close = function () {
 	}, 400, 'linear', function () {
 		self.moving = false;
 	});
-}
+};
 GS.Sidebar.prototype.open = function() {
 	var self = this;
 	this.$sidebar.animate({
@@ -297,11 +297,11 @@ GS.Sidebar.prototype.open = function() {
 	}, 400, 'linear',function() {
 		self.moving = false;
 	});
-}
+};
 //Function.bind fix, developer.mozilla.org
 GS.compatibilityFix = function() {
 	if(!Function.prototype.bind){Function.prototype.bind=function(oThis){if(typeof this!=="function"){throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");}var aArgs=Array.prototype.slice.call(arguments,1),fToBind=this,fNOP=function(){},fBound=function(){return fToBind.apply(this instanceof fNOP&&oThis?this:oThis,aArgs.concat(Array.prototype.slice.call(arguments)))};fNOP.prototype=this.prototype;fBound.prototype=new fNOP();return fBound}};
-}
+};
 $(document).ready(function () {
 	$('#main').css('width', $(window).width() + 'px');
 	var world = new GS.World($('#gameview'));
