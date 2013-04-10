@@ -4,8 +4,8 @@ Hosted on:
 ##Instructions
 
 ###Opening/Closing the Sidebar
-* On desktop, double click on the sidebar area
-* On Touchscreens, swype on the sidebar area
+* On Desktop devices, double click on the sidebar area
+* On Touchscreen devices, swype on the sidebar area
 
 ###Creating Particles:
 * Select type of particle to create on the sidebar
