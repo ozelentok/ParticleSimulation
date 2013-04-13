@@ -106,44 +106,50 @@ GS.World.prototype.createStar = function (x, y) {
 	}));	
 };
 GS.World.prototype.calcStarsForces = function () {
-	for (var i = 0, starsLen = this.stars.length; i < starsLen; i += 1) {
+	for (var i = 0; i < this.stars.length; i += 1) {
 		var star = this.stars[i];
-		for(var k = 0, partLen = this.particles.length; k < partLen; k += 1) {
+		for (var k = 0; k < this.particles.length; k += 1) {
 			var particle = this.particles[k];
 			var dx = particle.x - star.x;
 			var dy = particle.y - star.y;
 			var dPowed = dx * dx + dy * dy;
 			var d = Math.sqrt(dPowed);
-			if(d === 0) {
-				continue;
-			}	
-			var force = GS.Const.polarity * GS.Const.gravityConst * star.mass * particle.mass / dPowed;
-			var fx = force * dx / d;
-			var fy = force * dy / d;
-			particle.fx -= fx;
-			particle.fy -= fy;
+			if (star.collidesWith(particle, d)) {
+				star.mergeWith(particle);
+				this.particles.splice(k, 1);
+			}
+			else {
+				var force = GS.Const.polarity * GS.Const.gravityConst * star.mass * particle.mass / dPowed;
+				var fx = force * dx / d;
+				var fy = force * dy / d;
+				particle.fx -= fx;
+				particle.fy -= fy;
+			}
 		}
 	}
 };
 GS.World.prototype.calcParticlesForces = function () {
-	for (var i = 0, partLen = this.particles.length; i < partLen - 1; i += 1) {
+	for (var i = 0; i < this.particles.length - 1; i += 1) {
 		var mainParticle = this.particles[i];
-		for(var k = i + 1; k < partLen; k += 1) {
+		for (var k = i + 1; k < this.particles.length; k += 1) {
 			var otherParticle = this.particles[k];
 			var dx = otherParticle.x - mainParticle.x;
 			var dy = otherParticle.y - mainParticle.y;
 			var dPowed = dx * dx + dy * dy;
 			var d = Math.sqrt(dPowed);
-			if(d === 0) {
-				continue;
+			if (mainParticle.collidesWith(otherParticle, d)) {
+				mainParticle.mergeWith(otherParticle);
+				this.particles.splice(k, 1);
 			}
-			var force = GS.Const.polarity * GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
-			var fx = force * dx / d;
-			var fy = force * dy / d;
-			otherParticle.fx -= fx;
-			otherParticle.fy -= fy;
-			mainParticle.fx += fx;
-			mainParticle.fy += fy;
+			else {
+				var force = GS.Const.polarity * GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
+				var fx = force * dx / d;
+				var fy = force * dy / d;
+				otherParticle.fx -= fx;
+				otherParticle.fy -= fy;
+				mainParticle.fx += fx;
+				mainParticle.fy += fy;
+			}
 		}
 	}
 };
@@ -203,7 +209,15 @@ GS.Particle.prototype.normalizeSpeed = function() {
 		this.vy *= ratio;
 	}
 };
-
+GS.Particle.prototype.collidesWith = function(otherParticle, distance) {
+	return distance <= (this.rad + otherParticle.rad);
+}
+GS.Particle.prototype.mergeWith = function(otherParticle) {
+	this.vx += otherParticle.vx;
+	this.vy += otherParticle.vy;
+	this.mass += otherParticle.mass;
+	this.rad = Math.sqrt(this.mass / (Math.PI * (GS.Const.density)));
+}
 GS.Particle.prototype.checkWallsCollision = function() {
 	if (this.x - this.rad <= 0) {
 		this.x = this.rad;
@@ -248,6 +262,7 @@ GS.Const = {
 	
 	particleRad: 5,
 	particleMass: 2,
+	density: 0.025,
 	starRad: 10,
 	starMass: 7,
 	gravityConst: 250,
@@ -304,7 +319,7 @@ GS.compatibilityFix = function() {
 };
 $(document).ready(function () {
 	$('#main').css('width', $(window).width() + 'px');
-	var world = new GS.World($('#gameview'));
+	world = new GS.World($('#gameview'));
 	var sidebar = new GS.Sidebar($('#sidebar'));
 	GS.compatibilityFix();
 	world.start();
