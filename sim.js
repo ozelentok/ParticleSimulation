@@ -212,10 +212,10 @@ GS.Particle.prototype.normalizeSpeed = function() {
 GS.Particle.prototype.collidesWith = function(otherParticle, distance) {
 	return distance <= (this.rad + otherParticle.rad);
 }
-GS.Particle.prototype.mergeWith = function(otherParticle) {
-	this.vx += otherParticle.vx;
-	this.vy += otherParticle.vy;
-	this.mass += otherParticle.mass;
+GS.Particle.prototype.mergeWith = function(other) {
+	this.vx = (this.mass * this.vx + other.mass * other.vx) / (this.mass + other.mass);
+	this.vy = (this.mass * this.vy + other.mass * other.vy) / (this.mass + other.mass);
+	this.mass += other.mass;
 	this.rad = Math.sqrt(this.mass / (Math.PI * (GS.Const.density)));
 }
 GS.Particle.prototype.checkWallsCollision = function() {
