@@ -50,6 +50,14 @@ GS.World.prototype.attachEvents = function () {
 			GS.Const.polarity = 1;
 		}
 	});
+	$('#mergeBox').prop('checked', false);
+	$('#mergeBox').click(function() {
+		if(this.checked) {
+			GS.Const.merge = true;
+		} else {
+			GS.Const.merge = false;
+		}
+	});
 	$('#timeSpeedBox').val(GS.Const.timeSpeed *  1000);
 	$('#timeSpeedBox').change(function() {
 		GS.Const.timeSpeed = (parseFloat($('#timeSpeedBox').val()) / 1000) || GS.Const.timeSpeed;
@@ -115,8 +123,13 @@ GS.World.prototype.calcStarsForces = function () {
 			var dPowed = dx * dx + dy * dy;
 			var d = Math.sqrt(dPowed);
 			if (star.collidesWith(particle, d)) {
-				star.mergeWith(particle);
-				this.particles.splice(k, 1);
+				if(GS.Const.merge) {
+					star.mergeWith(particle);
+					this.particles.splice(k, 1);
+				}
+				else {
+					star.collideElastically(particle);
+				}
 			}
 			else {
 				var force = GS.Const.polarity * GS.Const.gravityConst * star.mass * particle.mass / dPowed;
@@ -138,8 +151,13 @@ GS.World.prototype.calcParticlesForces = function () {
 			var dPowed = dx * dx + dy * dy;
 			var d = Math.sqrt(dPowed);
 			if (mainParticle.collidesWith(otherParticle, d)) {
-				mainParticle.mergeWith(otherParticle);
-				this.particles.splice(k, 1);
+				if(GS.Const.merge) {
+					mainParticle.mergeWith(otherParticle);
+					this.particles.splice(k, 1);
+				}
+				else {
+					mainParticle.collideElastically(otherParticle);
+				}
 			}
 			else {
 				var force = GS.Const.polarity * GS.Const.gravityConst * otherParticle.mass * mainParticle.mass / dPowed;
@@ -212,6 +230,13 @@ GS.Particle.prototype.normalizeSpeed = function() {
 GS.Particle.prototype.collidesWith = function(otherParticle, distance) {
 	return distance <= (this.rad + otherParticle.rad);
 }
+GS.Particle.prototype.collideElastically = function(other) {
+	var old = {vx: this.vx, vy: this.vy, ovx: other.vx, ovy: other.vy };
+	this.vx = (old.vx * (this.mass - other.mass) + 2 * other.mass * old.ovx) / (this.mass + other.mass);
+	this.vy = (old.vy * (this.mass - other.mass) + 2 * other.mass * old.ovy) / (this.mass + other.mass);
+	other.vx = (old.ovx * (other.mass - this.mass) + 2 * this.mass * old.vx) / (this.mass + other.mass);
+	other.vy = (old.ovy * (other.mass - this.mass) + 2 * this.mass * old.vy) / (this.mass + other.mass);
+}
 GS.Particle.prototype.mergeWith = function(other) {
 	this.vx = (this.mass * this.vx + other.mass * other.vx) / (this.mass + other.mass);
 	this.vy = (this.mass * this.vy + other.mass * other.vy) / (this.mass + other.mass);
@@ -268,6 +293,7 @@ GS.Const = {
 	gravityConst: 250,
 	polarity: 1,
 	timeSpeed: 0.025,
+	merge: false,
 	speedLimit: 18,
 	FrameRate: 1000 / 60
 };
