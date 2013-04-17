@@ -128,7 +128,8 @@ GS.World.prototype.calcStarsForces = function () {
 					this.particles.splice(k, 1);
 				}
 				else {
-					star.collideElastically(particle);
+					particle.vx *= -1;
+					particle.vy *= -1;
 				}
 			}
 			else {
