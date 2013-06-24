@@ -2,8 +2,8 @@ var GS = {};
 GS.World = function ($canvas) {
 	this.$canvas = $canvas;
 	this.ctx = $canvas[0].getContext('2d');
-	this.ctx.globalCompositeOperation = 'lighter'; // enable "tails"
-	this.ctx.strokeStyle = 'black';
+	//this.ctx.globalCompositeOperation = 'lighter';
+	//this.ctx.strokeStyle = 'black';
 	this.ctx.canvas.width = GS.Const.width;
 	this.ctx.canvas.style.width = GS.Const.width + 'px';
 	this.ctx.canvas.height = GS.Const.height;
@@ -192,7 +192,6 @@ GS.World.prototype.drawStarsParticles = function () {
 		this.ctx.arc(star.x, star.y,
 				star.rad, 0, 2*Math.PI, true);
 		this.ctx.fill();
-		this.ctx.stroke();
 	}
 	this.ctx.fillStyle = GS.Colors.particleFillStyle;
 	for (var i = 0, partLen = this.particles.length; i < partLen; i += 1) {
@@ -201,7 +200,6 @@ GS.World.prototype.drawStarsParticles = function () {
 		this.ctx.arc(particle.x, particle.y,
 				particle.rad, 0, 2*Math.PI, true);
 		this.ctx.fill();
-		this.ctx.stroke();
 	}
 };
 GS.World.prototype.draw = function () {
@@ -299,9 +297,9 @@ GS.Const = {
 	FrameRate: 1000 / 60
 };
 GS.Colors = {
-	particleFillStyle:'rgba(128,128,255,1)',
-	bgFillStyle: 'rgba(40,40,40,0.6)',
-	starFillStyle: 'rgb(200, 80, 0)'
+	particleFillStyle:'rgb(128,128,255)',
+	bgFillStyle: 'rgba(55,55,55,0.2)',
+	starFillStyle: 'rgb(200, 80, 0)',
 };
 GS.Sidebar = function($sidebar) {
 	var self = this;
