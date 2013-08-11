@@ -11,11 +11,11 @@ GS.World.prototype.start = function () {
 	this.initWorld();
 	this.prevTime = Date.now();
 	window.requestAnimFrame = (function() {
-		return window.requestAnimationFrame    || 
-				window.webkitRequestAnimationFrame || 
-				window.mozRequestAnimationFrame    || 
-				window.oRequestAnimationFrame      || 
-				window.msRequestAnimationFrame     || 
+		return window.requestAnimationFrame    ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame    ||
+				window.oRequestAnimationFrame      ||
+				window.msRequestAnimationFrame     ||
 				function(callback){
 					window.setTimeout(callback, GS.Const.FrameRate);
 				};
@@ -311,7 +311,7 @@ GS.Sidebar = function($sidebar) {
 		if(self.isClosed) {
 			self.open();
 			self.isClosed = false;
-		} else { 
+		} else {
 			self.close();
 			self.isClosed = true;
 		}
